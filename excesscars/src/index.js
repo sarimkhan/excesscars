@@ -3,9 +3,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from "react-router";
 import './index.css';
-import App from './App';
 import Home from './pages/Home';
 import VehcileListings from './pages/VehicleListings';
+import VehicleDetails from './pages/VehicleDetails';
 import Layout from './components/Layout';
 import reportWebVitals from './reportWebVitals';
 
@@ -16,6 +16,7 @@ ReactDOM.createRoot(root).render(
       <Route path="/" element={<Layout />}>
         <Route index element={<Home name="Home Page" />} />
         <Route path='vehicles' element={<VehcileListings name="Vehicles Page" />} />
+        <Route path="/vehicle/:vin" element={<VehicleDetails/>} />
       </Route>
     </Routes>
   </BrowserRouter>,

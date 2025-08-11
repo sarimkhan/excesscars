@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.image-gallery-image{
+  width: 100% !important;
+} 
+.small-circle {
+  width: 20px; /* Adjust for desired size */
+  height: 20px; /* Adjust for desired size */
+  border-radius: 50%;
+  /* Optional: display property for inline elements like <span> */
+  /* display: inline-block; */
+}
