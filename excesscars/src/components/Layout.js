@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import usePageTracking from '../PageTracking';
 import { Outlet } from 'react-router';
 import {
   Collapse,
@@ -16,6 +17,7 @@ import { FaPhoneAlt, FaMapMarkerAlt, FaClock, FaFacebook, FaTwitter, FaInstagram
 import ridebaitlogo from '../images/ridebaitcartransparent.png';
 
 function Layout() {
+  usePageTracking()
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
