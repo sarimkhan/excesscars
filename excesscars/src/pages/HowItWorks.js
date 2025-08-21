@@ -1,8 +1,10 @@
 import React from 'react';
 import { Container, Row, Col, Card, CardBody, CardTitle, CardText, Button } from 'reactstrap';
 import { FaChartLine, FaHandshake, FaCarSide } from 'react-icons/fa';
+import usePageTracking from '../PageTracking';
 
 const HowItWorks = () => {
+  usePageTracking()
   return (
     <Container fluid className="py-5" style={{ background: "linear-gradient(135deg, #f8f9fa, #e9ecef)" }}>
       {/* Header */}

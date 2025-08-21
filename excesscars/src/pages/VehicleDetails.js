@@ -8,6 +8,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import SendOffer from '../components/OfferModal';
+import ReactGA from 'react-ga4';
 
 const VehicleDetails = () => {
     const [sendOfferModal, setSendOfferModal] = useState(false);
@@ -35,6 +36,9 @@ const VehicleDetails = () => {
                 setVehicleDetails(response.data);
                 const price = parseFloat(response.data[0][5]);
                 setVehiclePrice(price);
+                ReactGA.initialize('G-QZ4EFNV649');
+                // Send pageview with a custom path
+                ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: response.data[0][4] + " " + response.data[0][2] + " " + response.data[0][3] + " Details Page" });
             });
     }, [vin]);
 
@@ -42,13 +46,26 @@ const VehicleDetails = () => {
     useEffect(() => {
         if (vehicleDetailsArr !== "initial") {
             try {
+                let text = vehicleDetailsArr[0][16].replace('{', '').replace('}', '')
+                let imgUrls = [...text.matchAll(/"([^"]+)"/g)].map(match => match[1]);
                 let imageURLs = vehicleDetailsArr[0][16].replace('{', '').replace('}', '').split(',');
-                let tempCarouselArr = imageURLs.map(url => ({
-                    original: url,
-                    thumbnail: url,
-                    originalHeight: "height=300px"
-                }));
-                setCarouselObjArr(tempCarouselArr);
+                if (imgUrls.length === 0) {
+                    let tempCarouselArr = imageURLs.map(url => ({
+                        original: url,
+                        thumbnail: url,
+                        originalHeight: "height=300px"
+                    }));
+                    setCarouselObjArr(tempCarouselArr);
+                }
+                else {
+                    let tempCarouselArr = imgUrls.map(url => ({
+                        original: url,
+                        thumbnail: url,
+                        originalHeight: "height=300px"
+                    }));
+                    setCarouselObjArr(tempCarouselArr);
+                }
+
             } catch {
                 console.log("error loading images");
             }
@@ -113,7 +130,7 @@ const VehicleDetails = () => {
                     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
                 }
                 .price-card { color: #007bff; font-weight: bold; }
-                .price-card .savings-text { color: green; font-weight: 500; }
+                .price-card .savings-text { color: green; font-weight: 900; font-size:13px}
                 .specs-heading { font-weight: 600; margin-top: 15px; margin-bottom: 10px; color: #007bff; }
                 .specs-grid {
                     display: grid;
@@ -144,10 +161,10 @@ const VehicleDetails = () => {
                             <ImageGallery additionalClass='image-gallery-image' items={carouselObjArr} />
                             <div className="vehicle-title mt-3">
                                 <h2>{vehicleDetailsArr[0][4]} {vehicleDetailsArr[0][2]} {vehicleDetailsArr[0][3]}</h2>
-                                <p className="vehicle-subtitle">{vehicleDetailsArr[0][18]} - <span className='ms-auto' style={{fontWeight:'bold'}}><IoSpeedometer style={{marginTop:'-5px'}}/>{parseInt(vehicleDetailsArr[0][12]).toLocaleString()} miles</span></p>
+                                <p className="vehicle-subtitle">{vehicleDetailsArr[0][18]} - <span className='ms-auto' style={{ fontWeight: 'bold' }}><IoSpeedometer style={{ marginTop: '-5px' }} />{parseInt(vehicleDetailsArr[0][12]).toLocaleString()} miles</span></p>
                             </div>
 
-                            
+
                         </Col>
 
                         {/* Right column */}
@@ -156,32 +173,58 @@ const VehicleDetails = () => {
                                 <Row>
                                     <Col className='text-center' lg={6} md={6} sm={6} xs={6}>
                                         <h5 className='text-black'>Dealer Price</h5>
-                                        <h2 style={{color: 'black'}}>${parseInt(vehicleDetailsArr[0][5]).toLocaleString()}</h2>
+                                        <h3 style={{ color: 'black' }}>${parseInt(vehicleDetailsArr[0][5]).toLocaleString()}</h3>
                                     </Col>
                                     <Col className='text-center' lg={6} md={6} sm={6} xs={6}>
                                         <h5>Sugg. Offer</h5>
-                                        <h2 style={{color: '#007bff', fontWeight: 'bold'}}>${(parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}</h2>
+                                        <h3 style={{ color: '#007bff', fontWeight: 'bold' }}>${(parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}</h3>
                                     </Col>
                                 </Row>
 
                                 <p className="savings-text">
-                                    Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}</span>
+                                    Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .928))).toLocaleString()}</span>
                                 </p>
+                                <div style={{
+                                    position: 'absolute', left:'55%', top:'38%',
+                                    width:'40%', height:'3vh',
+                                    textAlign:'center',
+                                    padding: '3px', borderRadius: '20px',
+                                    background: 'linear-gradient(90deg, #dc3545, #ff6b6b)',
+                                    color: 'white', fontWeight: 'bold', fontSize: '11px',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                                }}>
+                                    <p>Financing Available</p>
+                                </div>
 
-                                <Input className="mb-2"
+                                <Input className="mb-2 mt-2"
                                     onChange={(e) => { setOffer(e.target.value) }}
-                                    placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}
+                                    placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}
                                 />
-                                <Button color='primary' block onClick={() => setSendOfferModal(true)}>
+                                <Button color='primary' block onClick={() => {
+                                    setSendOfferModal(true);
+
+                                    ReactGA.event({
+                                        category: 'ButtonClick',
+                                        action: 'Click',
+                                        label: 'OfferInitiate',
+                                    });
+
+                                }}>
                                     Send Offer
                                 </Button>
                             </Card>
                         </Col>
                         <Col lg={8} md={8} sm={12} xs={12}>
-                        <Tabs className="modern-tabs mt-4">
+                            <Tabs className="modern-tabs mt-4">
                                 <TabList>
                                     <Tab>Specifications</Tab>
-                                    <Tab>Financing</Tab>
+                                    <Tab onClick={() => {
+                                        ReactGA.event({
+                                            category: 'ButtonClick',
+                                            action: 'Click',
+                                            label: 'FinancingCalc',
+                                        });
+                                    }}>Financing</Tab>
                                 </TabList>
 
                                 {/* Specs Tab */}
@@ -255,7 +298,7 @@ const VehicleDetails = () => {
                                     </Card>
                                 </TabPanel>
                             </Tabs>
-                            </Col>
+                        </Col>
                     </Row>
                 </>
             )}

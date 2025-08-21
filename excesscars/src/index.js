@@ -9,9 +9,13 @@ import VehicleDetails from './pages/VehicleDetails';
 import Layout from './components/Layout';
 import HowItWorks from './pages/HowItWorks';
 import ContactUs from './pages/ContactUs';
+import TermsAndConditions from './pages/Terms';
 import reportWebVitals from './reportWebVitals';
+import ReactGA from "react-ga4";
+import usePageTracking from './PageTracking';
 
 const root = document.getElementById('root');
+ReactGA.initialize("G-QZ4EFNV649")
 ReactDOM.createRoot(root).render(
   <BrowserRouter>
     <Routes>
@@ -21,6 +25,7 @@ ReactDOM.createRoot(root).render(
         <Route path="/vehicle/:vin" element={<VehicleDetails/>} />
         <Route path='howitworks' element={<HowItWorks/>} />
         <Route path='contactus' element={<ContactUs/>} />
+        <Route path='termsandconditions' element={<TermsAndConditions/>} />
       </Route>
     </Routes>
   </BrowserRouter>,

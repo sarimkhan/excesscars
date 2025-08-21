@@ -15,8 +15,11 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { GiFishingPole } from "react-icons/gi";
+import usePageTracking from '../PageTracking';
+import { trackEvent } from '../trackevents';
 
 const ContactUs = () => {
+  usePageTracking()
   const [successDiv, setSuccessDiv] = useState(false)
   const [form, setForm] = useState({
     name: '',
@@ -31,15 +34,23 @@ const ContactUs = () => {
   };
 
   const handleSubmit = (e) => {
+
+    trackEvent({
+      action: "click_button",
+      category: "User",
+      label: "Contact Button",
+      value: 1,
+    });
+
     e.preventDefault(); // ✅ No backend yet
-    axios.get('https://excesscarsapi.onrender.com/insertContact/?name='+form.name+'&message='+form.message+'&subject='+form.subject+'&email='+form.email+'&number='+form.phone).then(()=>{
+    axios.get('https://excesscarsapi.onrender.com/insertContact/?name=' + form.name + '&message=' + form.message + '&subject=' + form.subject + '&email=' + form.email + '&number=' + form.phone).then(() => {
       setSuccessDiv(true)
     })
   };
 
   return (
     <Container className="my-5">
-      <Row style={{position:'relative'}} className="justify-content-center">
+      <Row style={{ position: 'relative' }} className="justify-content-center">
         <Col lg={8}>
           <Card
             className="shadow-lg border-0"
@@ -187,7 +198,7 @@ const ContactUs = () => {
           </p>
           <Button
             color="light"
-            onClick={()=>setSuccessDiv(false)}
+            onClick={() => setSuccessDiv(false)}
             style={{ marginTop: '20px', fontWeight: 'bold' }}
           >
             Close

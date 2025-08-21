@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import usePageTracking from '../PageTracking';
 import { Outlet } from 'react-router';
 import {
   Collapse,
@@ -17,7 +16,6 @@ import { FaPhoneAlt, FaMapMarkerAlt, FaClock, FaFacebook, FaTwitter, FaInstagram
 import ridebaitlogo from '../images/ridebaitcartransparent.png';
 
 function Layout() {
-  usePageTracking()
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -100,16 +98,16 @@ function Layout() {
             <Col md={4}>
               <h5 className="fw-bold text-white mb-3">RideBait</h5>
               <p style={{ color: '#adb5bd' }}>
-                Where motivated dealers meet ready buyers. Real deals, no endless listings.
+                Where motivated dealers meet ready buyers. Real deals, no endless listings. <br/> <a href='/termsandconditions'>Terms & Conditions</a>
               </p>
             </Col>
             <Col md={4}>
               <h6 className="fw-bold text-white mb-3">Contact Us</h6>
               <p style={{ color: '#adb5bd' }} className="mb-1">
-                <FaMapMarkerAlt className="me-2 text-warning" /> 4622 Aurora Glen Dr, Katy 77493
+                <FaMapMarkerAlt className="me-2 text-warning" /> 16010 Barkera Point, Houston 77079
               </p>
               <p style={{ color: '#adb5bd' }} className="mb-1">
-                <FaPhoneAlt className="me-2 text-warning" /> 925-968-8172
+                <FaPhoneAlt className="me-2 text-warning" /> 713-367-1577
               </p>
               <p style={{ color: '#adb5bd' }}>
                 <FaClock className="me-2 text-warning" /> Mon - Sat: 9am - 5pm<br />Sun: Closed
