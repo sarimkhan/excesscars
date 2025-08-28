@@ -29,12 +29,18 @@ const Home = (props) => {
     const [model, setModel] = useState("")
     const [vehicles, setVehicles] = useState([]);
     const [htmlstatearray, setHtmlstatearray] = useState([]);
+    const [viewMoreBtnHit, setViewMoreBtnHit] = useState(0)
     useEffect(() => {
         ReactGA.initialize('G-QZ4EFNV649');
         // Send pageview with a custom path
         ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Home Page" });
     }, [])
     const searchFunction = () => {
+        ReactGA.event({
+            category: 'ButtonClick',
+            action: 'SearchButtonClicked',
+            value: 1,
+        });
         let searchString = "/vehicles/?"
         if (minYear != '0') {
             searchString = searchString + "minYear=" + minYear.toString() + "&"
@@ -111,9 +117,9 @@ const Home = (props) => {
         }
         setMakesOptions(tempArr)
     }, [makes])
-    useEffect(()=>{
-        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res)=>setVehicles(res.data))
-    },[])
+    useEffect(() => {
+        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => setVehicles(res.data))
+    }, [])
     useEffect(() => {
         let htmlarrayLocal = [];
 
@@ -198,6 +204,58 @@ const Home = (props) => {
         }
         setHtmlstatearray(htmlarrayLocal);
     }, [vehicles]);
+
+    useEffect(() => {
+        const startTime = Date.now();
+        const handleBeforeUnload = () => {
+            const endTime = Date.now();
+            const timeSpentSeconds = Math.round((endTime - startTime) / 1000);
+            ReactGA.event({
+                category: 'ButtonClick',
+                action: 'Home Secs',
+                value: timeSpentSeconds,
+            });
+            console.log(`User spent ${timeSpentSeconds} seconds on the vehicle page.`);
+        };
+        window.addEventListener('pagehide', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('pagehide', handleBeforeUnload);
+            handleBeforeUnload(); // Also log when component unmounts (e.g., SPA navigation)
+        };
+    }, []);
+
+    const elementIsVisibleInViewport = (el, partiallyVisible = false) => {
+        const { top, left, bottom, right } = el.getBoundingClientRect();
+        const { innerHeight, innerWidth } = window;
+        return partiallyVisible
+            ? ((top > 0 && top < innerHeight) ||
+                (bottom > 0 && bottom < innerHeight)) &&
+            ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth))
+            : top >= 0 && left >= 0 && bottom <= innerHeight && right <= innerWidth;
+    };
+
+    useEffect(() => {
+        let tt = 0
+        const handleScroll = () => {
+            console.log('Scrolled to:', window.scrollY);
+            if (elementIsVisibleInViewport(document.getElementById('viewMoreBtn')) === true && tt < 1) {
+                ReactGA.event({
+                    category: 'ButtonClick',
+                    action: 'ViewButtonScrolled',
+                    value: 1,
+                });
+                tt += 1
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+
+
     return (<>
         <div style={{ position: 'relative' }}>
             <img style={{ objectFit: 'cover', height: window.innerWidth > 600 ? '100%' : '350px' }} width={'100%'} src={bannerImage} />
@@ -206,25 +264,37 @@ const Home = (props) => {
                 <h1 className='text-primary' style={{ fontWeight: 'bold' }}>Ride{<TbFishHook />}Bait</h1>
                 <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Reel In Your Next Ride</h3>
                 <h5 style={{ marginTop: '20px' }}><span style={{ fontWeight: 'bold' }}>Save Thousands</span> On Used Cars <br /> Shop Through <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
-                <a href='/vehicles'><Button className='mt-2' color='primary'>Browse Vehicles</Button></a>
+                <a href='/vehicles'><Button onClick={()=>{
+                    ReactGA.event({
+              category: 'ButtonClick',
+              action: 'BrowseBtnHome',
+              value: 1,
+            });
+                }} className='mt-2' color='primary'>Browse Vehicles</Button></a>
             </div>
 
         </div>
         <Container>
             <Row className='text-center mt-4 bg-light'>
-                <br/><br/><h3 className='mt-5'><FaCarOn/>Featured Vehicles<FaCarOn/></h3>
+                <br /><br /><h3 className='mt-5'><FaCarOn />Featured Vehicles<FaCarOn /></h3>
             </Row>
             <Row className='bg-light'>
-                <br/><br/>
+                <br /><br />
                 {htmlstatearray.length > 0 ? htmlstatearray : <Col lg={12} className='text-center'><h5>Loading...</h5></Col>}
             </Row>
-            <Row className='bg-light'>
-                <br/> <br/><br/>
-                <Col className='bg-light d-flex justify-content-center' lg={12}><a style={{alignSelf:'center'}} href='/vehicles'><Button style={{width:'25vh'}} color='primary'>View More</Button></a></Col>
-                <br/> <br/><br/><br/> <br/><br/>
+            <Row className='bg-light' id='viewMoreBtn'>
+                <br /> <br /><br />
+                <Col className='bg-light d-flex justify-content-center' lg={12}><a style={{ alignSelf: 'center' }} href='/vehicles'><Button onClick={() => {
+                    ReactGA.event({
+                        category: 'ButtonClick',
+                        action: 'ViewMoreButtonClicked',
+                        value: 1,
+                    });
+                }} style={{ width: '25vh' }} color='primary'>View More</Button></a></Col>
+                <br /> <br /><br /><br /> <br /><br />
             </Row>
             <Row className='mt-5 text-center'>
-                <h3>Search A Specific Car <FaSearch/></h3>
+                <h3>Search A Specific Car <FaSearch /></h3>
             </Row>
             <Row>
                 <Col style={{ position: 'relative' }} lg={2} md={2} sm={12} xs={12}>

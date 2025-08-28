@@ -23,6 +23,15 @@ const SendOffer = (props) => {
   const closethemodal = () => {
     axios.get("https://excesscarsapi.onrender.com/insertOffer/?name=" + name + "&email=" + email + "&number=" + number + "&zipcode=" + zipcode + "&offer=" + offer + "&vin=" + vin).then(() => {
       setSuccessDiv(true)
+      if (window.gtag) {
+        window.gtag('event', 'conversion', {
+          send_to: 'AW-11008479889/aMdzCK3p1Y8bEJGloIEp',
+          value: 1.0,
+          currency: 'USD',
+        });
+        console.log('Conversion Sent')
+      }
+
     })
   }
 

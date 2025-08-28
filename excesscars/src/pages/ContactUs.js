@@ -43,7 +43,7 @@ const ContactUs = () => {
     });
 
     e.preventDefault(); // ✅ No backend yet
-    axios.get('https://excesscarsapi.onrender.com/insertContact/?name=' + form.name + '&message=' + form.message + '&subject=' + form.subject + '&email=' + form.email + '&number=' + form.phone).then(() => {
+    axios.get('https://excesscarsapi.onrender.com/insertContact/?name=' + form.name + '&message=' + form.message + '&subject=msg' + '&email=' + form.email + '&number=' + form.phone).then(() => {
       setSuccessDiv(true)
     })
   };
@@ -115,7 +115,7 @@ const ContactUs = () => {
                       />
                     </FormGroup>
                   </Col>
-                  <Col md={6}>
+                  {/* <Col md={6}>
                     <FormGroup>
                       <Label for="subject">Subject</Label>
                       <Input
@@ -127,7 +127,7 @@ const ContactUs = () => {
                         onChange={handleChange}
                       />
                     </FormGroup>
-                  </Col>
+                  </Col> */}
                 </Row>
                 <FormGroup>
                   <Label for="message">Message</Label>

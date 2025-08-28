@@ -398,9 +398,38 @@ const VehcileListings = () => {
   // Pagination logic
   const totalPages = Math.ceil(vehicles.length / ITEMS_PER_PAGE);
   const goToPage = (page) => {
+    ReactGA.event({
+      category: 'ButtonClick',
+      action: 'Pagination Clicked',
+      value: page,
+    });
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     window.scrollTo(0, 0);
   };
+
+
+  useEffect(() => {
+    const startTime = Date.now();
+    const handleBeforeUnload = () => {
+      const endTime = Date.now();
+      const timeSpentSeconds = Math.round((endTime - startTime) / 1000);
+      ReactGA.event({
+        category: 'ButtonClick',
+        action: 'Listing Secs',
+        value: timeSpentSeconds,
+      });
+      console.log(`User spent ${timeSpentSeconds} seconds on the vehicle page.`);
+    };
+    window.addEventListener('pagehide', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('pagehide', handleBeforeUnload);
+      handleBeforeUnload(); // Also log when component unmounts (e.g., SPA navigation)
+    };
+  }, []);
+
+
+
+
 
   return (
     <Container fluid className='mt-5'>
@@ -570,7 +599,7 @@ const VehcileListings = () => {
                   </Dropdown>
                 </Col>
                 <Col lg={2} md={6} sm={6} xs={6}>
-                  <h5>{vehicles.length === 8 ? "Getting More Vehicles" : vehicles.length.toString() + " Vehicles Found"}</h5>
+                  <h5>{vehicles.length === 4 ? "Getting More Vehicles" : vehicles.length.toString() + " Vehicles Found"}</h5>
                 </Col>
 
               </Row>
