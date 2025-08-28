@@ -205,7 +205,7 @@ const Home = (props) => {
             <div style={{ color: 'white', position: 'absolute', top: '20%', left: '10%' }}>
                 <h1 className='text-primary' style={{ fontWeight: 'bold' }}>Ride{<TbFishHook />}Bait</h1>
                 <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Reel In Your Next Ride</h3>
-                <h5 style={{ marginTop: '20px' }}>Bait The Dealer - Save Thousands <br /> Shop Through <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
+                <h5 style={{ marginTop: '20px' }}><span style={{ fontWeight: 'bold' }}>Save Thousands</span> On Used Cars <br /> Shop Through <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
                 <a href='/vehicles'><Button className='mt-2' color='primary'>Browse Vehicles</Button></a>
             </div>
 

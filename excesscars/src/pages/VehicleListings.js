@@ -158,10 +158,10 @@ const VehcileListings = () => {
     if (searchParams.get('minPrice')) setMinPrice(searchParams.get('minPrice'));
     if (searchParams.get('maxPrice')) setMaxPrice(searchParams.get('maxPrice'));
     if (searchParams.get('make')) setMake(searchParams.get('make'));
-    if (searchParams.get('model')){
+    if (searchParams.get('model')) {
       setModel(searchParams.get('model'));
-    } 
-    else{
+    }
+    else {
       setModel("")
     }
     if (searchParams.get('body')) setBody(searchParams.get('body'));
@@ -170,7 +170,7 @@ const VehcileListings = () => {
 
   // Load dependent data
   useEffect(() => {
-    
+
 
     axios.get(`https://excesscarsapi.onrender.com/getModels/?make=${make}`).then(res => {
       setModels(res.data);
@@ -253,21 +253,30 @@ const VehcileListings = () => {
     let fetchUrl = hasParams
       ? "https://excesscarsapi.onrender.com/getFilteredVehicles/?"
       : "https://excesscarsapi.onrender.com/getAllVehicles/";
+    if (!hasParams) {
+      axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => { setVehicles(res.data); setLoading(false); }).then(() => {
+        axios.get(fetchUrl).then((res) => {
+          setVehicles(shuffleArray(res.data))
+        })
 
-    if (searchParams.get('minYear')) fetchUrl += `minYear=${searchParams.get('minYear')}&`;
-    if (searchParams.get('maxYear')) fetchUrl += `maxYear=${searchParams.get('maxYear')}&`;
-    if (searchParams.get('minPrice')) fetchUrl += `minPrice=${searchParams.get('minPrice')}&`;
-    if (searchParams.get('maxPrice')) fetchUrl += `maxPrice=${searchParams.get('maxPrice')}&`;
-    if (searchParams.get('make')) fetchUrl += `make=${searchParams.get('make')}&`;
-    if (searchParams.get('model')) fetchUrl += `model=${searchParams.get('model')}&`;
-    if (searchParams.get('body')) fetchUrl += `body=${searchParams.get('body')}&`;
-    if (searchParams.get('location')) fetchUrl += `location=${searchParams.get('location')}&`;
+      })
+    }
+    else {
+      if (searchParams.get('minYear')) fetchUrl += `minYear=${searchParams.get('minYear')}&`;
+      if (searchParams.get('maxYear')) fetchUrl += `maxYear=${searchParams.get('maxYear')}&`;
+      if (searchParams.get('minPrice')) fetchUrl += `minPrice=${searchParams.get('minPrice')}&`;
+      if (searchParams.get('maxPrice')) fetchUrl += `maxPrice=${searchParams.get('maxPrice')}&`;
+      if (searchParams.get('make')) fetchUrl += `make=${searchParams.get('make')}&`;
+      if (searchParams.get('model')) fetchUrl += `model=${searchParams.get('model')}&`;
+      if (searchParams.get('body')) fetchUrl += `body=${searchParams.get('body')}&`;
+      if (searchParams.get('location')) fetchUrl += `location=${searchParams.get('location')}&`;
+      axios.get(fetchUrl).then(res => {
+        if (searchParams.get('minYear') || searchParams.get('maxYear') || searchParams.get('minPrice') || searchParams.get('maxPrice') || searchParams.get('make') || searchParams.get('model') || searchParams.get('body')) { setVehicles(res.data); setLoading(false) }
 
-    axios.get(fetchUrl).then(res => {
-      if (searchParams.get('minYear') || searchParams.get('maxYear') || searchParams.get('minPrice') || searchParams.get('maxPrice') || searchParams.get('make') || searchParams.get('model') || searchParams.get('body')) { setVehicles(res.data); }
-      else { setVehicles(shuffleArray(res.data)) };
-      setLoading(false);
-    });
+      });
+    }
+
+
   }, []);
 
   // Build paginated HTML cards
@@ -561,7 +570,7 @@ const VehcileListings = () => {
                   </Dropdown>
                 </Col>
                 <Col lg={2} md={6} sm={6} xs={6}>
-                  <h5>{vehicles.length} Vehicles Found</h5>
+                  <h5>{vehicles.length === 8 ? "Getting More Vehicles" : vehicles.length.toString() + " Vehicles Found"}</h5>
                 </Col>
 
               </Row>
