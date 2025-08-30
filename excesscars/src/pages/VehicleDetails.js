@@ -39,6 +39,7 @@ const VehicleDetails = () => {
                 ReactGA.initialize('G-QZ4EFNV649');
                 // Send pageview with a custom path
                 ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: response.data[0][4] + " " + response.data[0][2] + " " + response.data[0][3] + " Details Page" });
+                document.title = response.data[0][4] + " " + response.data[0][2] + " " + response.data[0][3];
             });
     }, [vin]);
 
@@ -91,6 +92,38 @@ const VehicleDetails = () => {
         }
     }, [vehiclePrice, downPayment, tradeInValue, interestRate, loanTerm]);
     console.log(vehicleDetailsArr)
+
+    const elementIsVisibleInViewport = (el, partiallyVisible = false) => {
+        const { top, left, bottom, right } = el.getBoundingClientRect();
+        const { innerHeight, innerWidth } = window;
+        return partiallyVisible
+            ? ((top > 0 && top < innerHeight) ||
+                (bottom > 0 && bottom < innerHeight)) &&
+            ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth))
+            : top >= 0 && left >= 0 && bottom <= innerHeight && right <= innerWidth;
+    };
+
+    useEffect(() => {
+        let tt = 0
+        const handleScroll = () => {
+            console.log('Scrolled to:', window.scrollY);
+            if (elementIsVisibleInViewport(document.getElementById('financeCalc')) === true && tt < 1) {
+                ReactGA.event({
+                    category: 'ButtonClick',
+                    action: 'FinanceScrolled',
+                    value: 1,
+                });
+                tt += 1
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+
     return (
 
         <Container className="vehicle-details-container">
@@ -185,9 +218,9 @@ const VehicleDetails = () => {
                                     Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .928))).toLocaleString()}</span>
                                 </p>
                                 <div style={{
-                                    position: 'absolute', left:'55%', top:'38%',
-                                    width:'40%', height:'3vh',
-                                    textAlign:'center',
+                                    position: 'absolute', left: '55%', top: '38%',
+                                    width: '40%', height: '3vh',
+                                    textAlign: 'center',
                                     padding: '3px', borderRadius: '20px',
                                     background: 'linear-gradient(90deg, #dc3545, #ff6b6b)',
                                     color: 'white', fontWeight: 'bold', fontSize: '11px',
@@ -215,90 +248,132 @@ const VehicleDetails = () => {
                             </Card>
                         </Col>
                         <Col lg={8} md={8} sm={12} xs={12}>
-                            <Tabs className="modern-tabs mt-4">
-                                <TabList>
-                                    <Tab>Specifications</Tab>
-                                    <Tab onClick={() => {
+                            <div className="specs-card my-5">
+                                <h5 className="mb-3">Details</h5>
+                                <div className="specs-heading">Performance</div>
+                                <div className="specs-grid">
+                                    <p><strong>Engine:</strong> {vehicleDetailsArr[0][19]}</p>
+                                    <p><strong>Transmission:</strong> {vehicleDetailsArr[0][10]}</p>
+                                    <p><strong>Drive Terrain:</strong> {vehicleDetailsArr[0][20]}</p>
+                                    <p><strong>MPG:</strong> {vehicleDetailsArr[0][13]} City / {vehicleDetailsArr[0][14]} Hwy</p>
+                                </div>
+
+                                <div className="specs-heading">Appearance</div>
+                                <div className="specs-grid">
+                                    <p><strong>Interior Color:</strong> {vehicleDetailsArr[0][8]}</p>
+                                    <p><strong>Exterior Color:</strong> {vehicleDetailsArr[0][7]}</p>
+                                    <p><strong>Trim:</strong> {vehicleDetailsArr[0][17]}</p>
+                                    <p><strong>Trim Version:</strong> {vehicleDetailsArr[0][18]}</p>
+                                </div>
+
+                                <div className="specs-heading">Details</div>
+                                <div className="specs-grid">
+                                    <p><strong>Body Type:</strong> {vehicleDetailsArr[0][11]}</p>
+                                    <p><strong>Fuel Type:</strong> {vehicleDetailsArr[0][9]}</p>
+                                    <p><strong>Doors:</strong> {vehicleDetailsArr[0][21]}</p>
+                                    <p><strong>VIN:</strong> {vehicleDetailsArr[0][6]}</p>
+                                    <p><strong>Miles:</strong> {parseInt(vehicleDetailsArr[0][12]).toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <Card className="finance-card" id='financeCalc'>
+                                <h5 className="mb-3">Financing Calculator</h5>
+                                <Row className="g-3">
+                                    <Col md={6}>
+                                        Vehicle Price
+                                        <Input type="number" value={vehiclePrice}
+                                            onChange={(e) => setVehiclePrice(parseFloat(e.target.value) || 0)} />
+                                    </Col>
+                                    <Col md={6}>
+                                        Down Payment
+                                        <Input type="number" value={downPayment}
+                                            onChange={(e) => setDownPayment(parseFloat(e.target.value) || 0)} />
+                                    </Col>
+                                    <Col md={6}>
+                                        Trade-in Value
+                                        <Input type="number" value={tradeInValue}
+                                            onChange={(e) => setTradeInValue(parseFloat(e.target.value) || 0)} />
+                                    </Col>
+                                    <Col md={6}>
+                                        Interest Rate (%)
+                                        <Input type="number" value={interestRate}
+                                            onChange={(e) => setInterestRate(parseFloat(e.target.value) || 0)} />
+                                    </Col>
+                                    <Col md={6}>
+                                        Loan Term (months)
+                                        <Input type="number" value={loanTerm}
+                                            onChange={(e) => setLoanTerm(parseInt(e.target.value) || 0)} />
+                                    </Col>
+                                </Row>
+
+                                <div className="payment-summary mt-4">
+                                    <h4>Estimated Payment</h4>
+                                    <h2>${monthlyPayment.toFixed(2)}/mo</h2>
+                                    <p>Total Loan Cost: ${totalLoanCost.toFixed(2)}</p>
+                                    <p>Total Interest: ${totalInterest.toFixed(2)}</p>
+                                </div>
+                            </Card>
+                            <div className="specs-card my-5">
+                                <h5 className="mb-3">Dealership Information</h5>
+                                <div className="specs-grid">
+                                    <p><strong>Website: <a onClick={() => {
                                         ReactGA.event({
                                             category: 'ButtonClick',
                                             action: 'Click',
-                                            label: 'FinancingCalc',
+                                            label: 'DealerLink',
                                         });
-                                    }}>Financing</Tab>
-                                </TabList>
+                                    }} target='_blank' href={'https://' + vehicleDetailsArr[0][23]}>{vehicleDetailsArr[0][23]}</a></strong></p>
+                                    <p><strong>Phone:</strong> {vehicleDetailsArr[0][26]}</p>
+                                    <p><strong>Address:</strong> {vehicleDetailsArr[0][24]}, {vehicleDetailsArr[0][25]}</p>
+                                </div>
+                            </div>
+                            <Col lg={12} md={12} sm={12} xs={12}>
+                                <Card className="price-card">
+                                    <Row>
+                                        <Col className='text-center' lg={6} md={6} sm={6} xs={6}>
+                                            <h5 className='text-black'>Dealer Price</h5>
+                                            <h3 style={{ color: 'black' }}>${parseInt(vehicleDetailsArr[0][5]).toLocaleString()}</h3>
+                                        </Col>
+                                        <Col className='text-center' lg={6} md={6} sm={6} xs={6}>
+                                            <h5>Sugg. Offer</h5>
+                                            <h3 style={{ color: '#007bff', fontWeight: 'bold' }}>${(parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}</h3>
+                                        </Col>
+                                    </Row>
 
-                                {/* Specs Tab */}
-                                <TabPanel>
-                                    <div className="specs-card">
-                                        <div className="specs-heading">Performance</div>
-                                        <div className="specs-grid">
-                                            <p><strong>Engine:</strong> {vehicleDetailsArr[0][19]}</p>
-                                            <p><strong>Transmission:</strong> {vehicleDetailsArr[0][10]}</p>
-                                            <p><strong>Drive Terrain:</strong> {vehicleDetailsArr[0][20]}</p>
-                                            <p><strong>MPG:</strong> {vehicleDetailsArr[0][13]} City / {vehicleDetailsArr[0][14]} Hwy</p>
-                                        </div>
-
-                                        <div className="specs-heading">Appearance</div>
-                                        <div className="specs-grid">
-                                            <p><strong>Interior Color:</strong> {vehicleDetailsArr[0][8]}</p>
-                                            <p><strong>Exterior Color:</strong> {vehicleDetailsArr[0][7]}</p>
-                                            <p><strong>Trim:</strong> {vehicleDetailsArr[0][17]}</p>
-                                            <p><strong>Trim Version:</strong> {vehicleDetailsArr[0][18]}</p>
-                                        </div>
-
-                                        <div className="specs-heading">Details</div>
-                                        <div className="specs-grid">
-                                            <p><strong>Body Type:</strong> {vehicleDetailsArr[0][11]}</p>
-                                            <p><strong>Fuel Type:</strong> {vehicleDetailsArr[0][9]}</p>
-                                            <p><strong>Doors:</strong> {vehicleDetailsArr[0][21]}</p>
-                                            <p><strong>VIN:</strong> {vehicleDetailsArr[0][6]}</p>
-                                            <p><strong>Miles:</strong> {parseInt(vehicleDetailsArr[0][12]).toLocaleString()}</p>
-                                        </div>
+                                    <p className="savings-text">
+                                        Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .928))).toLocaleString()}</span>
+                                    </p>
+                                    <div style={{
+                                        position: 'absolute', left: '55%', top: '38%',
+                                        width: '40%', height: '3vh',
+                                        textAlign: 'center',
+                                        padding: '3px', borderRadius: '20px',
+                                        background: 'linear-gradient(90deg, #dc3545, #ff6b6b)',
+                                        color: 'white', fontWeight: 'bold', fontSize: '11px',
+                                        boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                                    }}>
+                                        <p>Financing Available</p>
                                     </div>
-                                </TabPanel>
 
-                                {/* Financing Tab */}
-                                <TabPanel>
-                                    <Card className="finance-card">
-                                        <h5 className="mb-3">Financing Calculator</h5>
-                                        <Row className="g-3">
-                                            <Col md={6}>
-                                                Vehicle Price
-                                                <Input type="number" value={vehiclePrice}
-                                                    onChange={(e) => setVehiclePrice(parseFloat(e.target.value) || 0)} />
-                                            </Col>
-                                            <Col md={6}>
-                                                Down Payment
-                                                <Input type="number" value={downPayment}
-                                                    onChange={(e) => setDownPayment(parseFloat(e.target.value) || 0)} />
-                                            </Col>
-                                            <Col md={6}>
-                                                Trade-in Value
-                                                <Input type="number" value={tradeInValue}
-                                                    onChange={(e) => setTradeInValue(parseFloat(e.target.value) || 0)} />
-                                            </Col>
-                                            <Col md={6}>
-                                                Interest Rate (%)
-                                                <Input type="number" value={interestRate}
-                                                    onChange={(e) => setInterestRate(parseFloat(e.target.value) || 0)} />
-                                            </Col>
-                                            <Col md={6}>
-                                                Loan Term (months)
-                                                <Input type="number" value={loanTerm}
-                                                    onChange={(e) => setLoanTerm(parseInt(e.target.value) || 0)} />
-                                            </Col>
-                                        </Row>
+                                    <Input className="mb-2 mt-2"
+                                        onChange={(e) => { setOffer(e.target.value) }}
+                                        placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}
+                                    />
+                                    <Button color='primary' block onClick={() => {
+                                        setSendOfferModal(true);
 
-                                        <div className="payment-summary mt-4">
-                                            <h4>Estimated Payment</h4>
-                                            <h2>${monthlyPayment.toFixed(2)}/mo</h2>
-                                            <p>Total Loan Cost: ${totalLoanCost.toFixed(2)}</p>
-                                            <p>Total Interest: ${totalInterest.toFixed(2)}</p>
-                                        </div>
-                                    </Card>
-                                </TabPanel>
-                            </Tabs>
+                                        ReactGA.event({
+                                            category: 'ButtonClick',
+                                            action: 'Click',
+                                            label: 'OfferInitiate',
+                                        });
+
+                                    }}>
+                                        Send Offer
+                                    </Button>
+                                </Card>
+                            </Col>
                         </Col>
+
                     </Row>
                 </>
             )}

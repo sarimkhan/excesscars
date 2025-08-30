@@ -81,6 +81,7 @@ const VehcileListings = () => {
       setCurrentPage(savedState.page);
       // scroll restoration happens later after htmlstatearray renders
     }
+    document.title = "Inventory";
   }, []);
 
   // Restore scroll AFTER htmlstatearray renders and matches saved state

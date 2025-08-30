@@ -263,8 +263,8 @@ const Home = (props) => {
             <div style={{ position: 'absolute', left: '0', top: '0', width: '100%', height: '100%', backgroundColor: 'black', opacity: '0.7' }}></div>
             <div style={{ color: 'white', position: 'absolute', top: '20%', left: '10%' }}>
                 <h1 className='text-primary' style={{ fontWeight: 'bold' }}>Ride{<TbFishHook />}Bait</h1>
-                <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Reel In Your Next Ride</h3>
-                <h5 style={{ marginTop: '20px' }}><span style={{ fontWeight: 'bold' }}>Save Thousands</span> On Used Cars <br /> Shop Through <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
+                <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Pick Your Vehicle - Send A Free Offer</h3>
+                <h5 style={{ marginTop: '20px' }}><span style={{ fontWeight: 'bold' }}>Save Thousands</span> On Used Vehicles <br /> Shop On <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
                 <a href='/vehicles'><Button onClick={() => {
                     ReactGA.event({
                         category: 'ButtonClick',
@@ -315,7 +315,7 @@ const Home = (props) => {
                                 action: 'Quick2025',
                                 value: 1,
                             });
-                        }} outline color='primary' style={{ minWidth: '100%' }}>Latest & Greatest</Button></a></Col>
+                        }} outline color='primary' style={{ minWidth: '100%' }}>Latest</Button></a></Col>
                         <Col lg='3' xs='3' className='my-2'><a href='/vehicles?make=Toyota'><Button onClick={() => {
                             ReactGA.event({
                                 category: 'ButtonClick',
