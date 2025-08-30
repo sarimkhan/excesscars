@@ -33,6 +33,7 @@ const VehcileListings = () => {
   const [vehicles, setVehicles] = useState([]);
   const [htmlstatearray, setHtmlstatearray] = useState([]);
   const [selectedVin, setSelectedVin] = useState();
+  const [initialState, setIntitialState] = useState(true);
 
   // Filters state
   const [mobileFilter, setMobileFilter] = useState(false);
@@ -92,7 +93,10 @@ const VehcileListings = () => {
         setCurrentPage(pageToRestore);
       }
       setTimeout(() => {
-        window.scrollTo(0, savedState.scroll);
+        if (!initialState) {
+          window.scrollTo(0, savedState.scroll);
+        }
+
       }, 50);
     }
   }, [htmlstatearray, loading]);
@@ -262,6 +266,7 @@ const VehcileListings = () => {
       })
     }
     else {
+      setIntitialState(false)
       if (searchParams.get('minYear')) fetchUrl += `minYear=${searchParams.get('minYear')}&`;
       if (searchParams.get('maxYear')) fetchUrl += `maxYear=${searchParams.get('maxYear')}&`;
       if (searchParams.get('minPrice')) fetchUrl += `minPrice=${searchParams.get('minPrice')}&`;
@@ -366,7 +371,7 @@ const VehcileListings = () => {
         </Col>
       );
     }
-    setHtmlstatearray(htmlarrayLocal);
+    setHtmlstatearray([htmlarrayLocal]);
   }, [vehicles, currentPage]);
 
   //SortFunction
@@ -398,13 +403,17 @@ const VehcileListings = () => {
   // Pagination logic
   const totalPages = Math.ceil(vehicles.length / ITEMS_PER_PAGE);
   const goToPage = (page) => {
+    setIntitialState(false)
     ReactGA.event({
       category: 'ButtonClick',
       action: 'Pagination Clicked',
       value: page,
     });
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-    window.scrollTo(0, 0);
+    if (!initialState) {
+      window.scrollTo(0, 0);
+    }
+
   };
 
 
@@ -599,7 +608,7 @@ const VehcileListings = () => {
                   </Dropdown>
                 </Col>
                 <Col lg={2} md={6} sm={6} xs={6}>
-                  <h5>{vehicles.length === 4 ? "Getting More Vehicles" : vehicles.length.toString() + " Vehicles Found"}</h5>
+                  <h5>{vehicles.length === 8 ? "Getting More Vehicles" : vehicles.length.toString() + " Vehicles Found"}</h5>
                 </Col>
 
               </Row>

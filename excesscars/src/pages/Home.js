@@ -13,6 +13,7 @@ import axios from 'axios';
 import ReactGA from 'react-ga4';
 import { FaCarOn } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
+import { FaRankingStar } from "react-icons/fa6";
 
 const Home = (props) => {
     const [minYear, setMinYear] = useState(0)
@@ -264,17 +265,92 @@ const Home = (props) => {
                 <h1 className='text-primary' style={{ fontWeight: 'bold' }}>Ride{<TbFishHook />}Bait</h1>
                 <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Reel In Your Next Ride</h3>
                 <h5 style={{ marginTop: '20px' }}><span style={{ fontWeight: 'bold' }}>Save Thousands</span> On Used Cars <br /> Shop Through <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
-                <a href='/vehicles'><Button onClick={()=>{
+                <a href='/vehicles'><Button onClick={() => {
                     ReactGA.event({
-              category: 'ButtonClick',
-              action: 'BrowseBtnHome',
-              value: 1,
-            });
+                        category: 'ButtonClick',
+                        action: 'BrowseBtnHome',
+                        value: 1,
+                    });
                 }} className='mt-2' color='primary'>Browse Vehicles</Button></a>
             </div>
-
         </div>
         <Container>
+            <Row className='text-center mt-4'>
+                <br /><br /><h3 className='mt-5'><FaRankingStar />Popular Filters<FaRankingStar /></h3>
+            </Row>
+            <Row style={{ display: 'flex', justifyContent: 'center' }}>
+                <Col className='mt-3' lg='8' md='10' sm='12' xs='12'>
+                    <Row>
+                        <Col lg='3' xs='4' className='my-2'><a href='/vehicles?maxPrice=10000'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'Quick$10k',
+                                value: 1,
+                            });
+                        }} outline style={{ minWidth: '100%' }} color='danger'>~$10,000</Button></a></Col>
+                        <Col lg='2' xs='4' className='my-2'><a href='/vehicles?body=Pickup'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'QuickTrucks',
+                                value: 1,
+                            });
+                        }} style={{ minWidth: '100%' }} color='warning'>Trucks</Button></a></Col>
+                        <Col lg='3' xs='4' className='my-2'><a href='/vehicles?maxPrice=15000'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'Quick$15k',
+                                value: 1,
+                            });
+                        }} color='success' style={{ minWidth: '100%' }}>~$15,000</Button></a></Col>
+                        <Col lg='4' xs='4' className='my-2'><a href='/vehicles?make=Ford&model=F-150'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'QuickF-150',
+                                value: 1,
+                            });
+                        }} color='dark' style={{ minWidth: '100%' }}>Ford F-150</Button></a></Col>
+                        <Col lg='5' xs='5' className='my-2'><a href='/vehicles?minYear=2025'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'Quick2025',
+                                value: 1,
+                            });
+                        }} outline color='primary' style={{ minWidth: '100%' }}>Latest & Greatest</Button></a></Col>
+                        <Col lg='3' xs='3' className='my-2'><a href='/vehicles?make=Toyota'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'QuickToyota',
+                                value: 1,
+                            });
+                        }} outline color='dark' style={{ minWidth: '100%' }}>Toyota</Button></a></Col>
+                        <Col lg='4' xs='6' className='my-2'><a href='/vehicles?maxPrice=7000'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'QuickCash',
+                                value: 1,
+                            });
+                        }} style={{ minWidth: '100%' }} color='danger'>Cash Cars</Button></a></Col>
+                        <Col lg='4' xs='6' className='my-2'><a href='/vehicles?minYear=2020'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'Quick2020',
+                                value: 1,
+                            });
+                        }} style={{ minWidth: '100%' }} color='primary'>2020 or Newer</Button></a></Col>
+                        <Col lg='1' xs='4' className='my-2'><a href='/vehicles?body=SUV'><Button onClick={() => {
+                            ReactGA.event({
+                                category: 'ButtonClick',
+                                action: 'QuickSUVs',
+                                value: 1,
+                            });
+                        }} outline style={{ minWidth: '100%' }} color='dark'>SUVs</Button></a></Col>
+                        <br /><br /><br /><br />
+                        <Col style={{ display: 'flex', justifyContent: 'center' }} lg='12' xs='12'><a href='/vehicles'><Button color='primary'>View All Cars</Button></a></Col>
+                        <br /><br /><br /><br />
+                    </Row>
+                </Col>
+
+            </Row>
             <Row className='text-center mt-4 bg-light'>
                 <br /><br /><h3 className='mt-5'><FaCarOn />Featured Vehicles<FaCarOn /></h3>
             </Row>
@@ -293,6 +369,7 @@ const Home = (props) => {
                 }} style={{ width: '25vh' }} color='primary'>View More</Button></a></Col>
                 <br /> <br /><br /><br /> <br /><br />
             </Row>
+
             <Row className='mt-5 text-center'>
                 <h3>Search A Specific Car <FaSearch /></h3>
             </Row>
