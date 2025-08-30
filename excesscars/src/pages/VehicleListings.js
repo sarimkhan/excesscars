@@ -366,7 +366,7 @@ const VehcileListings = () => {
                   }}>Send Offer</Button>
                 </Col>
               </Row>
-              <Row className='mt-3'><Link style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }} to={'/vehicle/' + vehicles[i][6]}><Button color='success'>View Details</Button></Link></Row>
+              <Row className='mt-3'><Link style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }} to={'/vehicle/' + vehicles[i][6]}><Button style={{width:'100%'}} color='dark'>View Details</Button></Link></Row>
             </CardBody>
           </Card>
         </Col>
