@@ -108,7 +108,7 @@ const VehcileListings = () => {
         setCurrentPage(pageToRestore);
       }
       setTimeout(() => {
-        if (!initialState) {
+        if (initialState) {
           window.scrollTo(0, savedState.scroll);
         }
 
@@ -273,7 +273,14 @@ const VehcileListings = () => {
       ? "https://excesscarsapi.onrender.com/getFilteredVehicles/?"
       : "https://excesscarsapi.onrender.com/getAllVehicles/";
     if (!hasParams) {
-      axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => { setVehicles(res.data); setLoading(false); }).then(() => {
+      axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => {
+        setVehicles(res.data); setLoading(false); setIntitialState(false);
+        ReactGA.event({
+          category: 'ButtonClick',
+          action: 'LoadedFTVehicles',
+          gclid: localStorage.getItem('gclid') || undefined
+        });
+      }).then(() => {
         axios.get(fetchUrl).then((res) => {
           setVehicles(shuffleArray(res.data))
           ReactGA.event({
@@ -286,7 +293,6 @@ const VehcileListings = () => {
       })
     }
     else {
-      setIntitialState(false)
       if (searchParams.get('minYear')) fetchUrl += `minYear=${searchParams.get('minYear')}&`;
       if (searchParams.get('maxYear')) fetchUrl += `maxYear=${searchParams.get('maxYear')}&`;
       if (searchParams.get('minPrice')) fetchUrl += `minPrice=${searchParams.get('minPrice')}&`;
@@ -308,7 +314,14 @@ const VehcileListings = () => {
         });
       }
       else {
-        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => { setVehicles(res.data); setLoading(false); setIntitialState(false) }).then(() => {
+        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => {
+          setVehicles(res.data); setLoading(false); setIntitialState(false);
+          ReactGA.event({
+            category: 'ButtonClick',
+            action: 'LoadedFTVehicles',
+            gclid: localStorage.getItem('gclid') || undefined
+          });
+        }).then(() => {
           axios.get(fetchUrl).then((res) => {
             setVehicles(shuffleArray(res.data))
             ReactGA.event({
@@ -481,6 +494,35 @@ const VehcileListings = () => {
     };
   }, []);
 
+  const elementIsVisibleInViewport = (el, partiallyVisible = false) => {
+    const { top, left, bottom, right } = el.getBoundingClientRect();
+    const { innerHeight, innerWidth } = window;
+    return partiallyVisible
+      ? ((top > 0 && top < innerHeight) ||
+        (bottom > 0 && bottom < innerHeight)) &&
+      ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth))
+      : top >= 0 && left >= 0 && bottom <= innerHeight && right <= innerWidth;
+  };
+  useEffect(() => {
+    let tt = 0
+    const handleScroll = () => {
+      console.log('Scrolled to:', window.scrollY);
+      if (elementIsVisibleInViewport(document.getElementById('paginationBtn')) === true && tt < 1) {
+        ReactGA.event({
+          category: 'ButtonClick',
+          action: 'PaginationScrolled',
+          value: 1,
+          gclid: localStorage.getItem('gclid') || undefined
+        });
+        tt += 1
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
 
 
@@ -749,7 +791,7 @@ const VehcileListings = () => {
           {/* Pagination */}
           {vehicles.length > ITEMS_PER_PAGE && (
             <div className='d-flex justify-content-center my-4'>
-              <Button color='secondary' className='mx-1' disabled={currentPage === 1} onClick={() => goToPage(1)}>&laquo;</Button>
+              <Button id='paginationBtn' color='secondary' className='mx-1' disabled={currentPage === 1} onClick={() => goToPage(1)}>&laquo;</Button>
               <Button color='secondary' className='mx-1' disabled={currentPage === 1} onClick={() => goToPage(currentPage - 1)}>&lsaquo;</Button>
 
               {(() => {

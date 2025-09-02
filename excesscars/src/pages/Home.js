@@ -129,7 +129,15 @@ const Home = (props) => {
         setMakesOptions(tempArr)
     }, [makes])
     useEffect(() => {
-        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => setVehicles(res.data))
+        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => {
+            setVehicles(res.data);
+            ReactGA.event({
+                category: 'ButtonClick',
+                action: 'HomeFeatureLoaded',
+                value: 1,
+                gclid: localStorage.getItem('gclid') || undefined
+            });
+        })
     }, [])
     useEffect(() => {
         let htmlarrayLocal = [];
@@ -288,6 +296,25 @@ const Home = (props) => {
             </div>
         </div>
         <Container>
+            <Row className='text-center mt-4 bg-light'>
+                <br /><br /><h3 className='mt-5'><FaCarOn />Featured Vehicles<FaCarOn /></h3>
+            </Row>
+            <Row className='bg-light'>
+                <br /><br />
+                {htmlstatearray.length > 0 ? htmlstatearray : <Col lg={12} className='text-center'><h5>Loading...</h5></Col>}
+            </Row>
+            <Row className='bg-light' id='viewMoreBtn'>
+                <br /> <br /><br />
+                <Col className='bg-light d-flex justify-content-center' lg={12}><a style={{ alignSelf: 'center' }} href='/vehicles'><Button onClick={() => {
+                    ReactGA.event({
+                        category: 'ButtonClick',
+                        action: 'ViewMoreButtonClicked',
+                        value: 1,
+                        gclid: localStorage.getItem('gclid') || undefined
+                    });
+                }} style={{ width: '25vh' }} color='primary'>View More</Button></a></Col>
+                <br /> <br /><br /><br /> <br /><br />
+            </Row>
             <Row className='text-center mt-4'>
                 <br /><br /><h3 className='mt-5'><FaRankingStar />Popular Filters<FaRankingStar /></h3>
             </Row>
@@ -373,25 +400,7 @@ const Home = (props) => {
                 </Col>
 
             </Row>
-            <Row className='text-center mt-4 bg-light'>
-                <br /><br /><h3 className='mt-5'><FaCarOn />Featured Vehicles<FaCarOn /></h3>
-            </Row>
-            <Row className='bg-light'>
-                <br /><br />
-                {htmlstatearray.length > 0 ? htmlstatearray : <Col lg={12} className='text-center'><h5>Loading...</h5></Col>}
-            </Row>
-            <Row className='bg-light' id='viewMoreBtn'>
-                <br /> <br /><br />
-                <Col className='bg-light d-flex justify-content-center' lg={12}><a style={{ alignSelf: 'center' }} href='/vehicles'><Button onClick={() => {
-                    ReactGA.event({
-                        category: 'ButtonClick',
-                        action: 'ViewMoreButtonClicked',
-                        value: 1,
-                        gclid: localStorage.getItem('gclid') || undefined
-                    });
-                }} style={{ width: '25vh' }} color='primary'>View More</Button></a></Col>
-                <br /> <br /><br /><br /> <br /><br />
-            </Row>
+
 
             <Row className='mt-5 text-center'>
                 <h3>Search A Specific Car <FaSearch /></h3>
