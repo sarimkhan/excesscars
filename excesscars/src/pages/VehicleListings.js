@@ -6,20 +6,32 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Collapse
 } from 'reactstrap';
 import { Link } from 'react-router';
 import { IoSpeedometer } from "react-icons/io5";
 import SendOffer from '../components/OfferModal';
 import BaitLoading from '../components/BaitLoading';
+import { FaRankingStar } from "react-icons/fa6";
 import ReactGA from 'react-ga4';
+import { useLocation } from 'react-router';
 
 const ITEMS_PER_PAGE = 12;
 
 const VehcileListings = () => {
   useEffect(() => {
     ReactGA.initialize('G-QZ4EFNV649');
+
+    // Extract GCLID from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const gclid = params.get('gclid');
+    if (gclid) {
+      localStorage.setItem('gclid', gclid); // store for later events
+      console.log('GCLID saved:', gclid);
+    }
+
     // Send pageview with a custom path
-    ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Listing Page" });
+    ReactGA.send({ hitType: "pageview", page: window.location.pathname + window.location.search, title: "Listing Page" });
   }, [])
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -34,6 +46,7 @@ const VehcileListings = () => {
   const [htmlstatearray, setHtmlstatearray] = useState([]);
   const [selectedVin, setSelectedVin] = useState();
   const [initialState, setIntitialState] = useState(true);
+  const [collapseOpen, setCollapseOpen] = useState(false);
 
   // Filters state
   const [mobileFilter, setMobileFilter] = useState(false);
@@ -62,6 +75,7 @@ const VehcileListings = () => {
   const [ddOpen, setDdopen] = useState(false);
   const [ddSelect, setDdSelect] = useState("");
 
+  const toggleCollapse = () => setCollapseOpen(!collapseOpen)
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -262,6 +276,11 @@ const VehcileListings = () => {
       axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => { setVehicles(res.data); setLoading(false); }).then(() => {
         axios.get(fetchUrl).then((res) => {
           setVehicles(shuffleArray(res.data))
+          ReactGA.event({
+            category: 'ButtonClick',
+            action: 'LoadedVehicles',
+            gclid: localStorage.getItem('gclid') || undefined
+          });
         })
 
       })
@@ -276,10 +295,32 @@ const VehcileListings = () => {
       if (searchParams.get('model')) fetchUrl += `model=${searchParams.get('model')}&`;
       if (searchParams.get('body')) fetchUrl += `body=${searchParams.get('body')}&`;
       if (searchParams.get('location')) fetchUrl += `location=${searchParams.get('location')}&`;
-      axios.get(fetchUrl).then(res => {
-        if (searchParams.get('minYear') || searchParams.get('maxYear') || searchParams.get('minPrice') || searchParams.get('maxPrice') || searchParams.get('make') || searchParams.get('model') || searchParams.get('body')) { setVehicles(res.data); setLoading(false) }
+      if (searchParams.get('minYear') || searchParams.get('maxYear') || searchParams.get('minPrice') || searchParams.get('maxPrice') || searchParams.get('make') || searchParams.get('model') || searchParams.get('body')) {
+        axios.get(fetchUrl).then(res => {
+          {
+            setVehicles(res.data); setLoading(false);
+            ReactGA.event({
+              category: 'ButtonClick',
+              action: 'LoadedFilterVehicles',
+              gclid: localStorage.getItem('gclid') || undefined
+            });
+          }
+        });
+      }
+      else {
+        axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => { setVehicles(res.data); setLoading(false); setIntitialState(false) }).then(() => {
+          axios.get(fetchUrl).then((res) => {
+            setVehicles(shuffleArray(res.data))
+            ReactGA.event({
+              category: 'ButtonClick',
+              action: 'LoadedVehicles',
+              gclid: localStorage.getItem('gclid') || undefined
+            });
+          })
 
-      });
+        })
+      }
+
     }
 
 
@@ -295,8 +336,8 @@ const VehcileListings = () => {
 
     for (let i = startIndex; i < endIndex; i++) {
       let dealerPrice = parseInt(vehicles[i][5]).toLocaleString();
-      let savings = (parseInt(vehicles[i][5]) - parseInt(vehicles[i][5] * .928)).toLocaleString();
-      let youPay = (parseInt(vehicles[i][5] * .928)).toLocaleString();
+      let savings = (parseInt(vehicles[i][5]) - parseInt(vehicles[i][5] * .90)).toLocaleString();
+      let youPay = (parseInt(vehicles[i][5] * .90)).toLocaleString();
       let screensize = window.innerWidth <= 600;
 
       let text = vehicles[i][16].replace('{', '').replace('}', '');
@@ -362,11 +403,12 @@ const VehcileListings = () => {
                       category: 'ButtonClick',
                       action: 'OfferInitiateClick',
                       label: 'OfferInitiate',
+                      gclid: localStorage.getItem('gclid') || undefined
                     });
                   }}>Send Offer</Button>
                 </Col>
               </Row>
-              <Row className='mt-3'><Link style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }} to={'/vehicle/' + vehicles[i][6]}><Button style={{width:'100%'}} color='dark'>View Details</Button></Link></Row>
+              <Row className='mt-3'><Link style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }} to={'/vehicle/' + vehicles[i][6]}><Button style={{ width: '100%' }} color='dark'>View Details</Button></Link></Row>
             </CardBody>
           </Card>
         </Col>
@@ -409,6 +451,7 @@ const VehcileListings = () => {
       category: 'ButtonClick',
       action: 'Pagination Clicked',
       value: page,
+      gclid: localStorage.getItem('gclid') || undefined
     });
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     if (!initialState) {
@@ -427,6 +470,7 @@ const VehcileListings = () => {
         category: 'ButtonClick',
         action: 'Listing Secs',
         value: timeSpentSeconds,
+        gclid: localStorage.getItem('gclid') || undefined
       });
       console.log(`User spent ${timeSpentSeconds} seconds on the vehicle page.`);
     };
@@ -442,9 +486,93 @@ const VehcileListings = () => {
 
 
   return (
-    <Container fluid className='mt-5'>
+    <Container fluid>
       <SendOffer thevin={selectedVin} theoffer={offer} isopen={sendOfferModal} close={closeSendOffer} />
-      <Row>
+      <Row className='text-center mt-3' style={{ display: 'flex', justifyContent: 'center' }}><Button style={{ width: "30vh" }} color='primary' onClick={() => setCollapseOpen(!collapseOpen)}><FaRankingStar /> Popular Filters <FaRankingStar /></Button>
+      </Row>
+      <Collapse isOpen={collapseOpen}>
+        <Row style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
+          <Col className='mt-1' lg='8' md='10' sm='12' xs='12'>
+            <Row>
+              <Col lg='3' xs='4' className='my-2'><a href='/vehicles?maxPrice=10000'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'Quick$10k',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} outline style={{ minWidth: '100%' }} color='danger'>~$10,000</Button></a></Col>
+              <Col lg='2' xs='4' className='my-2'><a href='/vehicles?body=Pickup'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'QuickTrucks',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} style={{ minWidth: '100%' }} color='warning'>Trucks</Button></a></Col>
+              <Col lg='3' xs='4' className='my-2'><a href='/vehicles?maxPrice=15000'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'Quick$15k',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} color='success' style={{ minWidth: '100%' }}>~$15,000</Button></a></Col>
+              <Col lg='4' xs='4' className='my-2'><a href='/vehicles?make=Ford&model=F-150'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'QuickF-150',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} color='dark' style={{ minWidth: '100%' }}>Ford F-150</Button></a></Col>
+              <Col lg='5' xs='5' className='my-2'><a href='/vehicles?minYear=2025'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'Quick2025',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} outline color='primary' style={{ minWidth: '100%' }}>Latest</Button></a></Col>
+              <Col lg='3' xs='3' className='my-2'><a href='/vehicles?make=Toyota'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'QuickToyota',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} outline color='dark' style={{ minWidth: '100%' }}>Toyota</Button></a></Col>
+              <Col lg='4' xs='6' className='my-2'><a href='/vehicles?maxPrice=7000'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'QuickCash',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} style={{ minWidth: '100%' }} color='danger'>Cash Cars</Button></a></Col>
+              <Col lg='4' xs='6' className='my-2'><a href='/vehicles?minYear=2020'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'Quick2020',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} style={{ minWidth: '100%' }} color='primary'>2020 or Newer</Button></a></Col>
+              <Col lg='1' xs='4' className='my-2'><a href='/vehicles?body=SUV'><Button onClick={() => {
+                ReactGA.event({
+                  category: 'ButtonClick',
+                  action: 'QuickSUVs',
+                  value: 1,
+                  gclid: localStorage.getItem('gclid') || undefined
+                });
+              }} outline style={{ minWidth: '100%' }} color='dark'>SUVs</Button></a></Col>
+            </Row>
+          </Col>
+
+        </Row>
+      </Collapse>
+
+      <Row style={{ marginTop: '50px' }}>
         {/* Mobile Filters */}
         {mobileFilter === true ? <Col lg={12} sm={12} md={12} style={{ position: 'relative', marginTop: '-20px', marginLeft: '-12px' }}>
           <Button onClick={() => {
@@ -453,6 +581,7 @@ const VehcileListings = () => {
               category: 'ButtonClick',
               action: 'MobileFilterClick',
               label: 'MobileFilterOpen',
+              gclid: localStorage.getItem('gclid') || undefined
             });
           }} color='dark' style={{ position: 'absolute', right: '0' }}>Filters</Button>
           {mobileFilterDiv === true ? <Card style={{ display: 'block', zIndex: '100000000000', position: 'absolute', width: '100%' }} color='light' className='my-5'>

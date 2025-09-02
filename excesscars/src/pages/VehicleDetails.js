@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import { Row, Container, Col, Card, CardBody, Input, Button } from 'reactstrap';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
@@ -37,8 +37,17 @@ const VehicleDetails = () => {
                 const price = parseFloat(response.data[0][5]);
                 setVehiclePrice(price);
                 ReactGA.initialize('G-QZ4EFNV649');
+
+                // Extract GCLID from URL if present
+                const params = new URLSearchParams(window.location.search);
+                const gclid = params.get('gclid');
+                if (gclid) {
+                    localStorage.setItem('gclid', gclid); // store for later events
+                    console.log('GCLID saved:', gclid);
+                }
+
                 // Send pageview with a custom path
-                ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: response.data[0][4] + " " + response.data[0][2] + " " + response.data[0][3] + " Details Page" });
+                ReactGA.send({ hitType: "pageview", page: window.location.pathname + window.location.search, title: response.data[0][4] + " " + response.data[0][2] + " " + response.data[0][3] + " Details Page" });
                 document.title = response.data[0][4] + " " + response.data[0][2] + " " + response.data[0][3];
             });
     }, [vin]);
@@ -112,6 +121,7 @@ const VehicleDetails = () => {
                     category: 'ButtonClick',
                     action: 'FinanceScrolled',
                     value: 1,
+                    gclid: localStorage.getItem('gclid') || undefined
                 });
                 tt += 1
             }
@@ -210,12 +220,12 @@ const VehicleDetails = () => {
                                     </Col>
                                     <Col className='text-center' lg={6} md={6} sm={6} xs={6}>
                                         <h5>Sugg. Offer</h5>
-                                        <h3 style={{ color: '#007bff', fontWeight: 'bold' }}>${(parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}</h3>
+                                        <h3 style={{ color: '#007bff', fontWeight: 'bold' }}>${(parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}</h3>
                                     </Col>
                                 </Row>
 
                                 <p className="savings-text">
-                                    Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .928))).toLocaleString()}</span>
+                                    Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .90))).toLocaleString()}</span>
                                 </p>
                                 <div style={{
                                     position: 'absolute', left: '55%', top: '38%',
@@ -231,15 +241,16 @@ const VehicleDetails = () => {
 
                                 <Input className="mb-2 mt-2"
                                     onChange={(e) => { setOffer(e.target.value) }}
-                                    placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}
+                                    placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}
                                 />
                                 <Button color='primary' block onClick={() => {
                                     setSendOfferModal(true);
 
                                     ReactGA.event({
                                         category: 'ButtonClick',
-                                        action: 'Click',
+                                        action: 'DetailOffer',
                                         label: 'OfferInitiate',
+                                        gclid: localStorage.getItem('gclid') || undefined
                                     });
 
                                 }}>
@@ -320,6 +331,7 @@ const VehicleDetails = () => {
                                             category: 'ButtonClick',
                                             action: 'Click',
                                             label: 'DealerLink',
+                                            gclid: localStorage.getItem('gclid') || undefined
                                         });
                                     }} target='_blank' href={'https://' + vehicleDetailsArr[0][23]}>{vehicleDetailsArr[0][23]}</a></strong></p>
                                     <p><strong>Phone:</strong> {vehicleDetailsArr[0][26]}</p>
@@ -335,12 +347,12 @@ const VehicleDetails = () => {
                                         </Col>
                                         <Col className='text-center' lg={6} md={6} sm={6} xs={6}>
                                             <h5>Sugg. Offer</h5>
-                                            <h3 style={{ color: '#007bff', fontWeight: 'bold' }}>${(parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}</h3>
+                                            <h3 style={{ color: '#007bff', fontWeight: 'bold' }}>${(parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}</h3>
                                         </Col>
                                     </Row>
 
                                     <p className="savings-text">
-                                        Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .928))).toLocaleString()}</span>
+                                        Potential Savings: <span>${(parseInt(vehicleDetailsArr[0][5]) - (parseInt(vehicleDetailsArr[0][5] * .90))).toLocaleString()}</span>
                                     </p>
                                     <div style={{
                                         position: 'absolute', left: '55%', top: '38%',
@@ -356,7 +368,7 @@ const VehicleDetails = () => {
 
                                     <Input className="mb-2 mt-2"
                                         onChange={(e) => { setOffer(e.target.value) }}
-                                        placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .928)).toLocaleString()}
+                                        placeholder={"Suggested Offer $" + (parseInt(vehicleDetailsArr[0][5] * .90)).toLocaleString()}
                                     />
                                     <Button color='primary' block onClick={() => {
                                         setSendOfferModal(true);
@@ -365,6 +377,7 @@ const VehicleDetails = () => {
                                             category: 'ButtonClick',
                                             action: 'Click',
                                             label: 'OfferInitiate',
+                                            gclid: localStorage.getItem('gclid') || undefined
                                         });
 
                                     }}>

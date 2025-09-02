@@ -71,6 +71,7 @@ const SendOffer = (props) => {
                 category: 'ButtonClick',
                 action: 'SentOfferClick',
                 label: 'SentOffer',
+                gclid: localStorage.getItem('gclid') || undefined
               });
             }}>
               Send Offer
@@ -82,6 +83,7 @@ const SendOffer = (props) => {
                 category: 'ButtonClick',
                 action: 'CancelOfferClick',
                 label: 'CancelOffer',
+                gclid: localStorage.getItem('gclid') || undefined
               });
 
             }}>

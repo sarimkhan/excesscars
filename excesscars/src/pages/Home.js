@@ -14,6 +14,7 @@ import ReactGA from 'react-ga4';
 import { FaCarOn } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
 import { FaRankingStar } from "react-icons/fa6";
+import { useLocation } from 'react-router';
 
 const Home = (props) => {
     const [minYear, setMinYear] = useState(0)
@@ -33,14 +34,23 @@ const Home = (props) => {
     const [viewMoreBtnHit, setViewMoreBtnHit] = useState(0)
     useEffect(() => {
         ReactGA.initialize('G-QZ4EFNV649');
+        // Extract GCLID from URL if present
+        const params = new URLSearchParams(window.location.search);
+        const gclid = params.get('gclid');
+        if (gclid) {
+            localStorage.setItem('gclid', gclid); // store for later events
+            console.log('GCLID saved:', gclid);
+        }
+
         // Send pageview with a custom path
-        ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Home Page" });
+        ReactGA.send({ hitType: "pageview", page: window.location.pathname + window.location.search, title: "Home Page" });
     }, [])
     const searchFunction = () => {
         ReactGA.event({
             category: 'ButtonClick',
             action: 'SearchButtonClicked',
             value: 1,
+            gclid: localStorage.getItem('gclid') || undefined
         });
         let searchString = "/vehicles/?"
         if (minYear != '0') {
@@ -126,8 +136,8 @@ const Home = (props) => {
 
         for (let i = 0; i < vehicles.length; i++) {
             let dealerPrice = parseInt(vehicles[i][5]).toLocaleString();
-            let savings = (parseInt(vehicles[i][5]) - parseInt(vehicles[i][5] * .928)).toLocaleString();
-            let youPay = (parseInt(vehicles[i][5] * .928)).toLocaleString();
+            let savings = (parseInt(vehicles[i][5]) - parseInt(vehicles[i][5] * .90)).toLocaleString();
+            let youPay = (parseInt(vehicles[i][5] * .90)).toLocaleString();
             let screensize = window.innerWidth <= 600;
 
             let text = vehicles[i][16].replace('{', '').replace('}', '');
@@ -215,6 +225,7 @@ const Home = (props) => {
                 category: 'ButtonClick',
                 action: 'Home Secs',
                 value: timeSpentSeconds,
+                gclid: localStorage.getItem('gclid') || undefined
             });
             console.log(`User spent ${timeSpentSeconds} seconds on the vehicle page.`);
         };
@@ -244,6 +255,7 @@ const Home = (props) => {
                     category: 'ButtonClick',
                     action: 'ViewButtonScrolled',
                     value: 1,
+                    gclid: localStorage.getItem('gclid') || undefined
                 });
                 tt += 1
             }
@@ -270,6 +282,7 @@ const Home = (props) => {
                         category: 'ButtonClick',
                         action: 'BrowseBtnHome',
                         value: 1,
+                        gclid: localStorage.getItem('gclid') || undefined
                     });
                 }} className='mt-2' color='primary'>Browse Vehicles</Button></a>
             </div>
@@ -286,6 +299,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'Quick$10k',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} outline style={{ minWidth: '100%' }} color='danger'>~$10,000</Button></a></Col>
                         <Col lg='2' xs='4' className='my-2'><a href='/vehicles?body=Pickup'><Button onClick={() => {
@@ -293,6 +307,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'QuickTrucks',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} style={{ minWidth: '100%' }} color='warning'>Trucks</Button></a></Col>
                         <Col lg='3' xs='4' className='my-2'><a href='/vehicles?maxPrice=15000'><Button onClick={() => {
@@ -300,6 +315,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'Quick$15k',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} color='success' style={{ minWidth: '100%' }}>~$15,000</Button></a></Col>
                         <Col lg='4' xs='4' className='my-2'><a href='/vehicles?make=Ford&model=F-150'><Button onClick={() => {
@@ -307,6 +323,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'QuickF-150',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} color='dark' style={{ minWidth: '100%' }}>Ford F-150</Button></a></Col>
                         <Col lg='5' xs='5' className='my-2'><a href='/vehicles?minYear=2025'><Button onClick={() => {
@@ -314,6 +331,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'Quick2025',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} outline color='primary' style={{ minWidth: '100%' }}>Latest</Button></a></Col>
                         <Col lg='3' xs='3' className='my-2'><a href='/vehicles?make=Toyota'><Button onClick={() => {
@@ -321,6 +339,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'QuickToyota',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} outline color='dark' style={{ minWidth: '100%' }}>Toyota</Button></a></Col>
                         <Col lg='4' xs='6' className='my-2'><a href='/vehicles?maxPrice=7000'><Button onClick={() => {
@@ -328,6 +347,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'QuickCash',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} style={{ minWidth: '100%' }} color='danger'>Cash Cars</Button></a></Col>
                         <Col lg='4' xs='6' className='my-2'><a href='/vehicles?minYear=2020'><Button onClick={() => {
@@ -335,6 +355,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'Quick2020',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} style={{ minWidth: '100%' }} color='primary'>2020 or Newer</Button></a></Col>
                         <Col lg='1' xs='4' className='my-2'><a href='/vehicles?body=SUV'><Button onClick={() => {
@@ -342,6 +363,7 @@ const Home = (props) => {
                                 category: 'ButtonClick',
                                 action: 'QuickSUVs',
                                 value: 1,
+                                gclid: localStorage.getItem('gclid') || undefined
                             });
                         }} outline style={{ minWidth: '100%' }} color='dark'>SUVs</Button></a></Col>
                         <br /><br /><br /><br />
@@ -365,6 +387,7 @@ const Home = (props) => {
                         category: 'ButtonClick',
                         action: 'ViewMoreButtonClicked',
                         value: 1,
+                        gclid: localStorage.getItem('gclid') || undefined
                     });
                 }} style={{ width: '25vh' }} color='primary'>View More</Button></a></Col>
                 <br /> <br /><br /><br /> <br /><br />
