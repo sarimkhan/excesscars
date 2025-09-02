@@ -132,7 +132,7 @@ const Home = (props) => {
         axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => {
             setVehicles(res.data);
             ReactGA.event({
-                category: 'ButtonClick',
+                category: 'user_behavior',
                 action: 'HomeFeatureLoaded',
                 value: 1,
                 gclid: localStorage.getItem('gclid') || undefined
@@ -230,9 +230,10 @@ const Home = (props) => {
             const endTime = Date.now();
             const timeSpentSeconds = Math.round((endTime - startTime) / 1000);
             ReactGA.event({
-                category: 'ButtonClick',
+                category: 'user_behavior',
                 action: 'Home Secs',
                 value: timeSpentSeconds,
+                label: timeSpentSeconds + "secs Spent",
                 gclid: localStorage.getItem('gclid') || undefined
             });
             console.log(`User spent ${timeSpentSeconds} seconds on the vehicle page.`);
@@ -260,7 +261,7 @@ const Home = (props) => {
             console.log('Scrolled to:', window.scrollY);
             if (elementIsVisibleInViewport(document.getElementById('viewMoreBtn')) === true && tt < 1) {
                 ReactGA.event({
-                    category: 'ButtonClick',
+                    category: 'user_behavior',
                     action: 'ViewButtonScrolled',
                     value: 1,
                     gclid: localStorage.getItem('gclid') || undefined
@@ -283,8 +284,8 @@ const Home = (props) => {
             <div style={{ position: 'absolute', left: '0', top: '0', width: '100%', height: '100%', backgroundColor: 'black', opacity: '0.7' }}></div>
             <div style={{ color: 'white', position: 'absolute', top: '20%', left: '10%' }}>
                 <h1 className='text-primary' style={{ fontWeight: 'bold' }}>Ride{<TbFishHook />}Bait</h1>
-                <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Pick Your Vehicle - Send A Free Offer</h3>
-                <h5 style={{ marginTop: '20px' }}><span style={{ fontWeight: 'bold' }}>Save Thousands</span> On Used Vehicles <br /> Shop On <span style={{ fontWeight: 'bold' }}>Ride Bait</span></h5>
+                <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Over 2000 Used Trucks Cars SUVs<br/>Finance Or Buy Cash</h3>
+                <h5 style={{ marginTop: '20px' }}>Send A No Commitment Offer Today<br/><span style={{ fontWeight: 'bold' }}>Save Thousands</span></h5>
                 <a href='/vehicles'><Button onClick={() => {
                     ReactGA.event({
                         category: 'ButtonClick',

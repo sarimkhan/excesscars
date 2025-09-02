@@ -46,7 +46,7 @@ const VehcileListings = () => {
   const [htmlstatearray, setHtmlstatearray] = useState([]);
   const [selectedVin, setSelectedVin] = useState();
   const [initialState, setIntitialState] = useState(true);
-  const [collapseOpen, setCollapseOpen] = useState(false);
+  const [collapseOpen, setCollapseOpen] = useState(true);
 
   // Filters state
   const [mobileFilter, setMobileFilter] = useState(false);
@@ -276,7 +276,7 @@ const VehcileListings = () => {
       axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => {
         setVehicles(res.data); setLoading(false); setIntitialState(false);
         ReactGA.event({
-          category: 'ButtonClick',
+          category: 'user_behavior',
           action: 'LoadedFTVehicles',
           gclid: localStorage.getItem('gclid') || undefined
         });
@@ -284,7 +284,7 @@ const VehcileListings = () => {
         axios.get(fetchUrl).then((res) => {
           setVehicles(shuffleArray(res.data))
           ReactGA.event({
-            category: 'ButtonClick',
+            category: 'user_behavior',
             action: 'LoadedVehicles',
             gclid: localStorage.getItem('gclid') || undefined
           });
@@ -306,7 +306,7 @@ const VehcileListings = () => {
           {
             setVehicles(res.data); setLoading(false);
             ReactGA.event({
-              category: 'ButtonClick',
+              category: 'user_behavior',
               action: 'LoadedFilterVehicles',
               gclid: localStorage.getItem('gclid') || undefined
             });
@@ -317,7 +317,7 @@ const VehcileListings = () => {
         axios.get('https://excesscarsapi.onrender.com/getFeaturedVehicles/').then((res) => {
           setVehicles(res.data); setLoading(false); setIntitialState(false);
           ReactGA.event({
-            category: 'ButtonClick',
+            category: 'user_behavior',
             action: 'LoadedFTVehicles',
             gclid: localStorage.getItem('gclid') || undefined
           });
@@ -325,7 +325,7 @@ const VehcileListings = () => {
           axios.get(fetchUrl).then((res) => {
             setVehicles(shuffleArray(res.data))
             ReactGA.event({
-              category: 'ButtonClick',
+              category: 'user_behavior',
               action: 'LoadedVehicles',
               gclid: localStorage.getItem('gclid') || undefined
             });
@@ -480,8 +480,9 @@ const VehcileListings = () => {
       const endTime = Date.now();
       const timeSpentSeconds = Math.round((endTime - startTime) / 1000);
       ReactGA.event({
-        category: 'ButtonClick',
+        category: 'user_behavior',
         action: 'Listing Secs',
+        label: timeSpentSeconds + "secs spent",
         value: timeSpentSeconds,
         gclid: localStorage.getItem('gclid') || undefined
       });
@@ -509,7 +510,7 @@ const VehcileListings = () => {
       console.log('Scrolled to:', window.scrollY);
       if (elementIsVisibleInViewport(document.getElementById('paginationBtn')) === true && tt < 1) {
         ReactGA.event({
-          category: 'ButtonClick',
+          category: 'user_behavior',
           action: 'PaginationScrolled',
           value: 1,
           gclid: localStorage.getItem('gclid') || undefined
