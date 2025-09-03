@@ -406,7 +406,7 @@ const VehcileListings = () => {
               </CardText>
               <Row>
                 <Col lg={8} md={8} sm={7} xs={7}>
-                  <Input placeholder={"Input Offer"} onChange={(e) => setOffer(e.target.value)} />
+                  <Input placeholder={"Your Offer"} onChange={(e) => setOffer(e.target.value)} />
                 </Col>
                 <Col lg={4} md={4} sm={5} xs={5}>
                   <Button color='primary' block onClick={() => {
@@ -421,7 +421,7 @@ const VehcileListings = () => {
                   }}>Send Offer</Button>
                 </Col>
               </Row>
-              <Row className='mt-3'><Link style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }} to={'/vehicle/' + vehicles[i][6]}><Button style={{ width: '100%' }} color='dark'>View Details</Button></Link></Row>
+              <Row className='mt-3'><Link style={{ display: 'flex', justifyContent: 'center', textDecoration: 'none' }} to={'/vehicle/' + vehicles[i][6]}><Button style={{ width: '100%' }} color='light'>View Details</Button></Link></Row>
             </CardBody>
           </Card>
         </Col>
@@ -495,20 +495,25 @@ const VehcileListings = () => {
     };
   }, []);
 
+
   const elementIsVisibleInViewport = (el, partiallyVisible = false) => {
-    const { top, left, bottom, right } = el.getBoundingClientRect();
-    const { innerHeight, innerWidth } = window;
-    return partiallyVisible
-      ? ((top > 0 && top < innerHeight) ||
-        (bottom > 0 && bottom < innerHeight)) &&
-      ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth))
-      : top >= 0 && left >= 0 && bottom <= innerHeight && right <= innerWidth;
+    if (document.body.contains(el)) {
+      const { top, left, bottom, right } = el.getBoundingClientRect();
+      const { innerHeight, innerWidth } = window;
+      return partiallyVisible
+        ? ((top > 0 && top < innerHeight) ||
+          (bottom > 0 && bottom < innerHeight)) &&
+        ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth))
+        : top >= 0 && left >= 0 && bottom <= innerHeight && right <= innerWidth;
+    }
+
   };
   useEffect(() => {
     let tt = 0
     const handleScroll = () => {
       console.log('Scrolled to:', window.scrollY);
       if (elementIsVisibleInViewport(document.getElementById('paginationBtn')) === true && tt < 1) {
+        console.log("visible")
         ReactGA.event({
           category: 'user_behavior',
           action: 'PaginationScrolled',
@@ -544,7 +549,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} outline style={{ minWidth: '100%' }} color='danger'>~$10,000</Button></a></Col>
+              }} outline style={{ minWidth: '100%' }} color='dark'>~$10,000</Button></a></Col>
               <Col lg='2' xs='4' className='my-2'><a href='/vehicles?body=Pickup'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
@@ -552,7 +557,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} style={{ minWidth: '100%' }} color='warning'>Trucks</Button></a></Col>
+              }} style={{ minWidth: '100%' }} outline color='dark'>Trucks</Button></a></Col>
               <Col lg='3' xs='4' className='my-2'><a href='/vehicles?maxPrice=15000'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
@@ -560,7 +565,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} color='success' style={{ minWidth: '100%' }}>~$15,000</Button></a></Col>
+              }} color='dark' outline style={{ minWidth: '100%' }}>~$15,000</Button></a></Col>
               <Col lg='4' xs='4' className='my-2'><a href='/vehicles?make=Ford&model=F-150'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
@@ -568,7 +573,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} color='dark' style={{ minWidth: '100%' }}>Ford F-150</Button></a></Col>
+              }} color='dark' outline style={{ minWidth: '100%' }}>Ford F-150</Button></a></Col>
               <Col lg='5' xs='5' className='my-2'><a href='/vehicles?minYear=2025'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
@@ -576,7 +581,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} outline color='primary' style={{ minWidth: '100%' }}>Latest</Button></a></Col>
+              }} outline color='dark' style={{ minWidth: '100%' }}>Latest</Button></a></Col>
               <Col lg='3' xs='3' className='my-2'><a href='/vehicles?make=Toyota'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
@@ -592,7 +597,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} style={{ minWidth: '100%' }} color='danger'>Cash Cars</Button></a></Col>
+              }} style={{ minWidth: '100%' }} outline color='dark'>Cash Cars</Button></a></Col>
               <Col lg='4' xs='6' className='my-2'><a href='/vehicles?minYear=2020'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
@@ -600,7 +605,7 @@ const VehcileListings = () => {
                   value: 1,
                   gclid: localStorage.getItem('gclid') || undefined
                 });
-              }} style={{ minWidth: '100%' }} color='primary'>2020 or Newer</Button></a></Col>
+              }} style={{ minWidth: '100%' }} outline color='dark'>2020 or Newer</Button></a></Col>
               <Col lg='1' xs='4' className='my-2'><a href='/vehicles?body=SUV'><Button onClick={() => {
                 ReactGA.event({
                   category: 'ButtonClick',
