@@ -763,7 +763,7 @@ const VehcileListings = () => {
         </Col>
 
         {/* Vehicle listings */}
-        {loading === true ? <BaitLoading text="Reeling in dealer response..." /> : <Col lg={9}>
+        {loading === true ? <BaitLoading text="Loading Over 2000 Vehicles..." /> : <Col lg={9}>
           <Row>
             <Col lg={12}>
               <Row>

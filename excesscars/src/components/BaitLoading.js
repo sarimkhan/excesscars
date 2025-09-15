@@ -35,7 +35,7 @@ const BaitLoading = ({ text = "Casting your offer..." }) => {
       </div>
 
       {/* Loading text */}
-      <span style={styles.text}>{text}</span>
+      <span style={styles.text}><h3>{text}</h3></span>
     </div>
   );
 };

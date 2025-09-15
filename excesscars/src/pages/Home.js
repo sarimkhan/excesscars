@@ -284,8 +284,8 @@ const Home = (props) => {
             <div style={{ position: 'absolute', left: '0', top: '0', width: '100%', height: '100%', backgroundColor: 'black', opacity: '0.7' }}></div>
             <div style={{ color: 'white', position: 'absolute', top: '20%', left: '10%' }}>
                 <h1 className='text-primary' style={{ fontWeight: 'bold' }}>Ride{<TbFishHook />}Bait</h1>
-                <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Over 2000 Used Trucks Cars SUVs<br/>Finance Or Buy Cash</h3>
-                <h5 style={{ marginTop: '20px' }}>Send A No Commitment Offer Today<br/><span style={{ fontWeight: 'bold' }}>Save Thousands</span></h5>
+                <h3 style={{ marginTop: '-10px', fontWeight: 'bold' }}>Send A No Commitment Offer<br/>Save Thousands</h3>
+                <h5 style={{ marginTop: '20px', fontWeight: 'bold' }}>Over 2000 Used Trucks Cars SUVs<br/><span>Finance Or Buy Cash</span></h5>
                 <a href='/vehicles'><Button onClick={() => {
                     ReactGA.event({
                         category: 'ButtonClick',
@@ -293,7 +293,15 @@ const Home = (props) => {
                         value: 1,
                         gclid: localStorage.getItem('gclid') || undefined
                     });
-                }} className='mt-2' color='primary'>Browse Vehicles</Button></a>
+                }} className='mt-2' color='primary'>Browse Vehicles</Button></a><br/>
+                <a href='/howitworks'><Button onClick={() => {
+                    ReactGA.event({
+                        category: 'ButtonClick',
+                        action: 'WorksBtnHome',
+                        value: 1,
+                        gclid: localStorage.getItem('gclid') || undefined
+                    });
+                }} className='mt-2' color='light'>See How It Works</Button></a>
             </div>
         </div>
         <Container>
